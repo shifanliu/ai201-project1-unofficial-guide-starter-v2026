@@ -25,6 +25,7 @@ contains the answer.
 **Why this target:**
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
+One of my questions is about comparison of information in different docs, so I expect this one to be hard.
 
 ---
 
@@ -35,6 +36,7 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
+This is a rule that prevent delusion, so it is a hard rule for our system.
 
 ---
 
@@ -53,6 +55,7 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
+
 ---
 
 ## 4. Something about your chunks
@@ -69,11 +72,12 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-
+At least 4 of 5 sampled chunks read as a complete thought — no sentence is cut in half at either the start or the end of the chunk.
 
 **Why this target:**
 
-
+All the documents in city_guides are organized by headings, and most paragraphs are under 800 characters, so the answers to 4 of my 5 questions should land inside a single chunk without being split. I'm not claiming 5 of 5 because a 
+few sections run longer than 800 characters, so occasionally a sentence could still get cut at a chunk boundary.
 
 ---
 
@@ -87,11 +91,12 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
-
+For the 3 of my 5 test questions whose expected answer is a specific number, date, or duration, the system's answer contains that exact figure, not an approximation or a different number from the same document, in at least 
+2 of 3 cases.
 
 **Why this target:**
 
-
+Numbers are very easy to get wrong and for my questions, there are 3 of 5 about numbers.
 
 ---
 
