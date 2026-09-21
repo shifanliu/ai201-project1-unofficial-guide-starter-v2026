@@ -29,8 +29,20 @@
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size:** No fixed character size — one chunk per `##` heading (a full section)
+**Overlap:** None in the traditional sense; instead, the document's top-level title (e.g. `# Corry Vale`) is prepended to every chunk
+
+city_guides documents are long, structured travel guides (14 documents, ~2,068
+characters each on average) organized by labelled `##` sections — Getting there, Getting around, Eat and drink, and so on. The useful information for
+a given topic lives entirely within its own section, not scattered across sentences, so I replaced the starter's fixed 800-character window with a
+split on `##` headings: each chunk is one complete section.
+
+I set no upper size cap, since a section stays a single coherent topic even when it runs long — capping it would just reintroduce the mid-thought cuts
+I'm trying to avoid. Instead of overlap in the usual sense (repeating trailing characters from the previous chunk), I prepend the document's
+top-level title to every chunk, so a single retrieved chunk still carries which town it's about even without the surrounding document.
+
+Result: 94 chunks (up from the starter's 51), averaging 322 characters (down from 650), ranging from 174 to 762 characters — no more 24-character
+fragments like the starter produced.
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
@@ -52,31 +64,83 @@
      across.
 
      Milestone 3. -->
-
-**Chunk 1** — source: `` — produced by: ``
-
-```
-```
-
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 1** — source: `guide_accessibility.md#0` — produced by: `chunker.py::split_documents`
 
 ```
+# Getting around the region with limited mobility
+
+An honest assessment rather than a promotional one. Some of these places are
+difficult and it is better to know in advance.
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+This one is weaker than the rest — it's an intro/disclaimer with no concrete
+information, so on its own it can't answer a specific question. That's a
+property of this document (it opens with a framing paragraph before any
+real content), not a flaw in the splitting logic.
+
+**Chunk 2** — source: `guide_corry_vale.md#5` — produced by: `chunker.py::split_documents`
 
 ```
+# Corry Vale
+
+## Where to stay
+
+Perhaps thirty beds in the entire valley, spread across two pubs and a
+handful of farmhouse rooms. In summer these are booked months ahead.
+Camping is permitted on two marked fields and nowhere else.
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+Stands on its own — answers "where can I stay in Corry Vale" completely.
+
+**Chunk 3** — source: `guide_givens_mill.md#2` — produced by: `chunker.py::split_documents`
 
 ```
+# Givens Mill
+
+## Getting around
+
+Everything is on one street along the river. The mill is at one end and the
+church at the other, eight minutes apart. The riverside path continues in
+both directions for as far as you want to walk.
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+Stands on its own — answers "how do I get around Givens Mill" completely.
+
+**Chunk 4** — source: `guide_kestrelford.md#4` — produced by: `chunker.py::split_documents`
 
 ```
+# Kestrelford
+
+## What to see
+
+The market square on a Saturday morning is the main event and has run
+continuously since the 1400s. The parish church has a 13th-century tower
+you can climb for £2. The old trackbed walk runs six miles to the next
+village along an easy gradient and is the best half-day here.
 ```
+
+Stands on its own — answers "what should I see in Kestrelford" completely,
+including the specific figures (1400s, £2, six miles) intact.
+
+**Chunk 5** — source: `guide_pellew_sands.md#6` — produced by: `chunker.py::split_documents`
+
+```
+# Pellew Sands
+
+## When to go
+
+June and September for the beach without the crowds. July and August are
+busy and the town is at its most itself, for better and worse. Winter is
+bleak, largely closed, and has a following among people who like that sort
+of thing.
+```
+
+Stands on its own — answers "when should I visit Pellew Sands" completely.
+
+**Summary:** 4 of 5 sampled chunks read as a complete thought, matching the
+target set in `criteria.md` #4. The one exception (Chunk 1) is an
+intro-paragraph chunk with no factual content — a document-structure issue
+rather than a chunking-logic one.
 
 ## Sample Answer
 

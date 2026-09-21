@@ -26,6 +26,7 @@ from dataclasses import dataclass
 
 import config
 from ingest import Document
+import re
 
 
 @dataclass
@@ -97,7 +98,74 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
       - Would splitting on paragraph breaks keep more thoughts intact than
         splitting on a character count?
     """
-    return fallback_split(documents)
+    chunks: list[Chunk] = []
+
+    heading_pattern = re.compile(r"(?m)^## .+$")
+
+    for doc in documents:
+        lines = doc.text.splitlines()
+
+        # Pull off the top-level title line, e.g. "# Corry Vale"
+        title = ""
+        body_start = 0
+        if lines and lines[0].startswith("# "):
+            title = lines[0][2:].strip()
+            body_start = 1
+
+        body = "\n".join(lines[body_start:])
+        matches = list(heading_pattern.finditer(body))
+
+        index = 0
+
+        if not matches:
+            # No "## " sections found — keep the whole document as one chunk.
+            piece = doc.text.strip()
+            if piece:
+                chunks.append(
+                    Chunk(
+                        text=piece,
+                        source=doc.source,
+                        index=index,
+                        produced_by="chunker.py::split_documents",
+                    )
+                )
+                index += 1
+            continue
+
+        # Any text before the first "## " heading (an intro paragraph)
+        # becomes its own chunk, with the title attached for context.
+        intro = body[: matches[0].start()].strip()
+        if intro:
+            piece = f"# {title}\n\n{intro}".strip() if title else intro
+            chunks.append(
+                Chunk(
+                    text=piece,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+            index += 1
+
+        # One chunk per "## " section, title prepended to each.
+        for i, match in enumerate(matches):
+            start = match.start()
+            end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
+            section = body[start:end].strip()
+
+            piece = f"# {title}\n\n{section}".strip() if title else section
+            if piece:
+                chunks.append(
+                    Chunk(
+                        text=piece,
+                        source=doc.source,
+                        index=index,
+                        produced_by="chunker.py::split_documents",
+                    )
+                )
+                index += 1
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
