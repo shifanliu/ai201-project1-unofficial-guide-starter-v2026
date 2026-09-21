@@ -54,6 +54,7 @@ in at least 4 of 5 tries.
 **Why this target:**
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
+When I set the cutoff in Milestone 4, my 5 in-corpus questions had best distances between 0.196 and 0.411, and my 5 OUT_OF_SCOPE questions had best distances between 0.803 and 0.975. There is a clean gap of nearly 0.4 with no overlap at all. Given a gap that clean, I'd actually expect the gate to catch all 5 of 5 out-of-scope questions, not just 4. I'm keeping the target at 4 of 5 rather than raising it to 5 of 5, though, because this target was written in unit 1 before I had run anything, I did not expect it to be also good for one complex problem.
 
 
 ---

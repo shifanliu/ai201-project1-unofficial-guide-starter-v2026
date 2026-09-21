@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+**[shifanliu]** — corpus: `city_guides`
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -26,6 +26,10 @@
      this repo.
 
      Milestone 5. -->
+
+This is a retrieval-augmented question-answering system built on the `city_guides` corpus: fourteen long-form travel guides covering nine towns and villages in a region, plus five documents that cut across all of them (eating, walking, regional transport, seasons, and accessibility). Ask it
+a specific question, for example, how long a drive takes, where to find cheaper food, and it finds
+the relevant section of the right guide, and answers using only what's written there, naming the source file. If you ask something the guides don't cover, it says so honestly instead of guessing.
 
 ## Chunking Strategy
 
@@ -147,14 +151,17 @@ rather than a chunking-logic one.
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:** How long does it take to drive from Brightwater to Corry Vale?
 
 **Answer:**
 
 ```
+Driving from Brightwater to Corry Vale takes 35 minutes on a good road as far as the valley mouth and then 20 more on a poor one (guide_corry_vale.md).
+
+Sources retrieved: guide_brightwater.md, guide_corry_vale.md, guide_marchwood.md, guide_thornby_wells.md, guide_walking.md
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.6 (kept the starter's default)
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -165,9 +172,24 @@ rather than a chunking-logic one.
 
      Milestone 4. -->
 
+Ran all 5 in-corpus questions and all 5 OUT_OF_SCOPE questions. The best
+distance for in-corpus questions ranged from 0.196 to 0.411; the best
+distance for out-of-scope questions ranged from 0.803 to 0.975. That's a
+gap of nearly 0.4 with no overlap at all — the default 0.6 sits cleanly in
+the middle and correctly separates both groups completely (5/5 each).
+
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| Which pub in Corry Vale serves food every day of the week? | Yes | 0.196 |
+| How long does it take to drive from Brightwater to Corry Vale? | Yes | 0.251 |
+| Where in Brightwater can you find cheaper food than the riverside strip? | Yes | 0.274 |
+| What months should you visit Corry Vale? | Yes | 0.342 |
+| How far in advance do you need to book Sunday lunch at Thornby Wells? | Yes | 0.411 |
+| What is the capital of Mongolia? | No | 0.803 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.835 |
+| How do I write a for loop in Rust? | No | 0.836 |
+| How do I change the oil in a diesel engine? | No | 0.888 |
+| Who won the 1994 World Cup? | No | 0.975 |
 
 ## How I Used AI
 
@@ -180,9 +202,17 @@ rather than a chunking-logic one.
 
      Milestone 5. -->
 
-**1.**
+**1.** I asked Claude to write the chunking function, giving it precise constraints upfront rather than a vague request: split on `##` headings so
+each chunk is one complete section, no upper size cap, and prepend the document's top-level title to every chunk instead of using traditional
+character-overlap. It returned a `split_documents` function matching those constraints exactly, including handling the edge case of an intro paragraph
+before the first heading. I ran it, checked the actual output (94 chunks, 174–762 characters, no more 24-character fragments like the starter's
+version), and confirmed the sample chunks read as complete thoughts before keeping the function as given.
 
-**2.**
+**2.** I pasted my five acceptance criteria and asked Claude to say exactly how it would test each one using only the sentence, with no suggestions. It
+flagged that my chunk-size criterion listed three question types as *examples* rather than naming which specific questions counted, so someone
+grading it could reasonably disagree on which 3 of my 5 questions the "2 of 3" target applied to. I rewrote it to say "the 3 of my 5 test questions
+whose expected answer is a specific number, date, or duration" instead of just listing examples, so the set of questions is fixed rather than open to
+interpretation.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
